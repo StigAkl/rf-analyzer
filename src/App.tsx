@@ -1,11 +1,21 @@
+import RoomCanvas from "./components/RoomCanvas";
+
 const App = () => {
   return (
-    <main className="min-h-screen bg-zinc-950 text-zinc-100 p-8">
+    <main className="flex h-dvh w-full flex-col overflow-hidden bg-zinc-950 p-6 text-zinc-100">
       <h1 className="text-4xl font-bold tracking-widest text-blue-400">
         Signaanalyse
       </h1>
 
       <p className="mt-2 text-zinc-400">Simulering av radiofrekvenser</p>
+
+      <section className="flex min-h-0 min-w-0 flex-1 items-center justify-center">
+        <RoomCanvas
+          room={{ width: 20, height: 20 }}
+          transmitter={{ id: "123", position: { x: 10, y: 10 } }}
+          receiver={{ id: "321", position: { x: 40, y: 20 } }}
+        />
+      </section>
     </main>
   );
 };
