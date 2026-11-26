@@ -1,5 +1,10 @@
 import { useEffect, useRef } from "react";
 import type { Room, Transmitter, Receiver } from "../engine/types";
+import { drawNode } from "../rendering/drawNode";
+import { drawRays } from "../rendering/drawRays";
+import { drawBackground } from "../rendering/drawBackground";
+import { drawGrid } from "../rendering/drawGrid";
+import { drawRoom } from "../rendering/drawRoom";
 
 interface RoomCanvasProps {
   room: Room;
@@ -18,39 +23,43 @@ const RoomCanvas = ({ room, transmitter, receiver }: RoomCanvasProps) => {
 
     if (!canvas || !ctx) return;
 
-    canvas.width = room.width * SCALE;
-    canvas.height = room.height * SCALE;
+    const draw = () => {
+      canvas.width = canvas.clientWidth;
+      canvas.height = canvas.clientHeight;
 
-    ctx.fillStyle = "#09090b";
+      drawBackground(ctx, canvas.width, canvas.height);
+      drawGrid(ctx, canvas.width, canvas.height, SCALE);
+      drawRoom(ctx, room, SCALE);
+      drawRays(ctx, transmitter.position, SCALE);
 
-    ctx.fillRect(0, 0, canvas.width * SCALE, canvas.height * SCALE);
+      drawNode(
+        ctx,
+        {
+          position: transmitter.position,
+          color: "#ff9999",
+          label: "TX",
+        },
+        SCALE,
+      );
 
-    ctx.strokeStyle = "#27272a";
-    ctx.lineWidth = 1;
+      drawNode(
+        ctx,
+        {
+          position: receiver.position,
+          color: "#fade80",
+          label: "RX",
+        },
+        SCALE,
+      );
+    };
 
-    for (let x = 0; x <= room.width; x++) {
-      ctx.beginPath();
-      ctx.moveTo(x * SCALE, 0);
-      ctx.lineTo(x * SCALE, canvas.height);
-      ctx.stroke();
-    }
+    const observer = new ResizeObserver(draw);
+    observer.observe(canvas);
 
-    for (let y = 0; y <= room.height; y++) {
-      ctx.beginPath();
-      ctx.moveTo(0, y * SCALE);
-      ctx.lineTo(canvas.width, y * SCALE);
-      ctx.stroke();
-    }
+    draw();
 
-    // Room boundary eller noe sånt
-    ctx.strokeStyle = "#71717a";
-    ctx.lineWidth = 4;
-
-    ctx.strokeRect(0, 0, canvas.width, canvas.height);
-
-    ctx.strokeStyle = "#22d3ee";
-    ctx.lineWidth = 2;
-  }, [room, transmitter]);
+    return () => observer.disconnect();
+  }, [room, transmitter, receiver]);
 
   return <canvas ref={canvasRef} className="block h-full w-full" />;
 };

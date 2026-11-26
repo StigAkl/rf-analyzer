@@ -11,9 +11,9 @@ const App = () => {
 
       <section className="flex min-h-0 min-w-0 flex-1 items-center justify-center">
         <RoomCanvas
-          room={{ width: 20, height: 20 }}
-          transmitter={{ id: "123", position: { x: 10, y: 10 } }}
-          receiver={{ id: "321", position: { x: 40, y: 20 } }}
+          room={{ width: 13, height: 10 }}
+          transmitter={{ id: "123", position: { x: 5, y: 5 } }}
+          receiver={{ id: "321", position: { x: 7, y: 8 } }}
         />
       </section>
     </main>
