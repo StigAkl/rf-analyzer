@@ -18,3 +18,8 @@ export interface Receiver {
     id: string;
     position: Vector2;
 }
+
+export interface Ray {
+    origin: Vector2;
+    direction: Vector2;
+}

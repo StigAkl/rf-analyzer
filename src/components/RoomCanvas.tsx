@@ -5,6 +5,7 @@ import { drawRays } from "../rendering/drawRays";
 import { drawBackground } from "../rendering/drawBackground";
 import { drawGrid } from "../rendering/drawGrid";
 import { drawRoom } from "../rendering/drawRoom";
+import { pointAt } from "../engine/ray";
 
 interface RoomCanvasProps {
   room: Room;
@@ -30,7 +31,7 @@ const RoomCanvas = ({ room, transmitter, receiver }: RoomCanvasProps) => {
       drawBackground(ctx, canvas.width, canvas.height);
       drawGrid(ctx, canvas.width, canvas.height, SCALE);
       drawRoom(ctx, room, SCALE);
-      drawRays(ctx, transmitter.position, SCALE);
+      drawRays(ctx, transmitter.position, SCALE, room);
 
       drawNode(
         ctx,

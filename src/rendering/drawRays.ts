@@ -1,7 +1,9 @@
-import type { Vector2 } from "../engine/types";
+import { distance } from "../engine/geometry";
+import { intersectVerticalWall } from "../engine/ray";
+import type { Ray, Room, Vector2 } from "../engine/types";
 
 
-export const drawRays = (ctx: CanvasRenderingContext2D, origin: Vector2, scale: number) => {
+export const drawRays = (ctx: CanvasRenderingContext2D, origin: Vector2, scale: number, room: Room) => {
     const txRadius = 7 / scale
     const radius = 3;
     const rayCount = 24;
@@ -9,11 +11,35 @@ export const drawRays = (ctx: CanvasRenderingContext2D, origin: Vector2, scale: 
     ctx.strokeStyle = "#0891b2"
     ctx.lineWidth = 1.5;
 
+
+    // Tegner en midlertidig vegg for testing..
+    const tempWallX = 6.8;
+
+    ctx.save()
+    ctx.beginPath()
+    ctx.strokeStyle="#DDDDDD"
+    ctx.lineWidth = 5
+    ctx.moveTo(tempWallX * scale + 5, 0)
+    ctx.lineTo(tempWallX * scale + 5, room.height * scale)
+    ctx.stroke()
+    ctx.restore();
+
     for(let i = 0; i < rayCount; i++) {
         const angle = (i / rayCount) * Math.PI * 2;
 
-        const endX = origin.x + Math.cos(angle) * radius;
-        const endY = origin.y + Math.sin(angle) * radius;
+        const ray: Ray = {
+            origin: origin,
+            direction: {
+                x: Math.cos(angle),
+                y: Math.sin(angle),
+            }
+        };
+
+        const intersection =  intersectVerticalWall(ray, tempWallX)
+        const hit = intersection && distance(origin, intersection) <= radius ? intersection : null;
+
+        const endX = hit ? hit.x : origin.x + Math.cos(angle) * radius;
+        const endY = hit ? hit.y : origin.y + Math.sin(angle) * radius;
 
         ctx.beginPath()
         ctx.moveTo(
