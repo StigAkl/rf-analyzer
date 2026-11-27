@@ -1,34 +1,27 @@
-import { add, scale } from "./geometry";
-import type { Ray, Vector2 } from "./types";
+import { add, cross, scale, subtract } from "./geometry";
+import type { Ray, Vector2, Wall } from "./types";
 
 
 export const pointAt = (ray: Ray, t: number): Vector2 => {
     return add(ray.origin, scale(ray.direction, t));
 }
 
-export const intersectVerticalWall = (
+
+export const intersectWall = (
     ray: Ray,
-    wallX: number,
+    wall: Wall,
 ): Vector2 | null => {
-    if(ray.direction.x === 0) return null;
+    const wallVector = subtract(wall.end, wall.start)
+    const offset = subtract(wall.start, ray.origin);
 
-    const t = (wallX - ray.origin.x) / ray.direction.x;
+    const denominator = cross(ray.direction, wallVector);
 
-    if(t < 0) return null;
+    if(Math.abs(denominator) < 1e-10) return null;
 
-    return pointAt(ray, t);
-}
+    const t = cross(offset, wallVector) / denominator
+    const u = cross(offset, ray.direction) / denominator
 
-
-export const intersectHorizontalWall = (
-    ray: Ray,
-    wallY: number,
-): Vector2 | null => {
-    if(ray.direction.y === 0) return null;
-
-    const t = (wallY - ray.origin.y) / ray.direction.y
-
-    if(t < 0) return null; 
+    if(t < 0 || u < 0 || u > 1) return null;
 
     return pointAt(ray, t);
 }

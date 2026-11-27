@@ -35,3 +35,8 @@ export const normalize = (v: Vector2): Vector2 => {
         y: v.y / length(v)
     }
 }
+
+
+export const cross = (a: Vector2, b: Vector2): number => {
+    return a.x * b.y - a.y * b.x;
+}

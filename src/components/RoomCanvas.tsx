@@ -1,11 +1,11 @@
 import { useEffect, useRef } from "react";
-import type { Room, Transmitter, Receiver } from "../engine/types";
+import type { Room, Transmitter, Receiver, Wall } from "../engine/types";
 import { drawNode } from "../rendering/drawNode";
 import { drawRays } from "../rendering/drawRays";
 import { drawBackground } from "../rendering/drawBackground";
 import { drawGrid } from "../rendering/drawGrid";
-import { drawRoom } from "../rendering/drawRoom";
-import { pointAt } from "../engine/ray";
+import { drawRoom, drawWalls } from "../rendering/drawRoom";
+import { getRoomWalls } from "../engine/room";
 
 interface RoomCanvasProps {
   room: Room;
@@ -25,14 +25,26 @@ const RoomCanvas = ({ room, transmitter, receiver }: RoomCanvasProps) => {
     if (!canvas || !ctx) return;
 
     const draw = () => {
+      const walls: Wall[] = [
+        ...getRoomWalls(room),
+        {
+          start: { x: 4, y: 1 },
+          end: { x: 6, y: 5 },
+        },
+        {
+          start: { x: 1, y: 3 },
+          end: { x: 3, y: 3 },
+        },
+      ];
+
       canvas.width = canvas.clientWidth;
       canvas.height = canvas.clientHeight;
 
       drawBackground(ctx, canvas.width, canvas.height);
       drawGrid(ctx, canvas.width, canvas.height, SCALE);
       drawRoom(ctx, room, SCALE);
-      drawRays(ctx, transmitter.position, SCALE, room);
-
+      drawWalls(ctx, walls, SCALE);
+      drawRays(ctx, transmitter.position, SCALE, walls);
       drawNode(
         ctx,
         {

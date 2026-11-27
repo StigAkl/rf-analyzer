@@ -23,3 +23,8 @@ export interface Ray {
     origin: Vector2;
     direction: Vector2;
 }
+
+export interface Wall {
+start: Vector2;
+end: Vector2;
+}

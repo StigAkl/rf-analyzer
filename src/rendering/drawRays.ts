@@ -1,9 +1,9 @@
-import { distance } from "../engine/geometry";
-import { intersectVerticalWall } from "../engine/ray";
-import type { Ray, Room, Vector2 } from "../engine/types";
+import { pointAt } from "../engine/ray";
+import { raycast } from "../engine/raycast";
+import type { Ray, Vector2, Wall } from "../engine/types";
 
 
-export const drawRays = (ctx: CanvasRenderingContext2D, origin: Vector2, scale: number, room: Room) => {
+export const drawRays = (ctx: CanvasRenderingContext2D, origin: Vector2, scale: number, walls: Wall[]) => {
     const txRadius = 7 / scale
     const radius = 3;
     const rayCount = 24;
@@ -11,18 +11,6 @@ export const drawRays = (ctx: CanvasRenderingContext2D, origin: Vector2, scale: 
     ctx.strokeStyle = "#0891b2"
     ctx.lineWidth = 1.5;
 
-
-    // Tegner en midlertidig vegg for testing..
-    const tempWallX = 6.8;
-
-    ctx.save()
-    ctx.beginPath()
-    ctx.strokeStyle="#DDDDDD"
-    ctx.lineWidth = 5
-    ctx.moveTo(tempWallX * scale + 5, 0)
-    ctx.lineTo(tempWallX * scale + 5, room.height * scale)
-    ctx.stroke()
-    ctx.restore();
 
     for(let i = 0; i < rayCount; i++) {
         const angle = (i / rayCount) * Math.PI * 2;
@@ -35,35 +23,22 @@ export const drawRays = (ctx: CanvasRenderingContext2D, origin: Vector2, scale: 
             }
         };
 
-        const intersection =  intersectVerticalWall(ray, tempWallX)
-        const hit = intersection && distance(origin, intersection) <= radius ? intersection : null;
+        
+        const hit = raycast(ray, walls)
 
-        const endX = hit ? hit.x : origin.x + Math.cos(angle) * radius;
-        const endY = hit ? hit.y : origin.y + Math.sin(angle) * radius;
+        const end = hit ?? pointAt(ray, radius)
+        const start = pointAt(ray, txRadius);
 
-        ctx.beginPath()
-        ctx.moveTo(
-            (origin.x + Math.cos(angle) * txRadius) * scale,
-            (origin.y + Math.sin(angle) * txRadius) * scale
-        )
-        ctx.lineTo(
-            endX * scale,
-            endY * scale
-        )
+        ctx.beginPath();
+        ctx.moveTo(start.x * scale, start.y * scale);
+        ctx.lineTo(end.x * scale, end.y * scale);
         ctx.stroke();
 
         ctx.fillStyle = "#ff0000";
 
         ctx.beginPath();
-    
-        ctx.arc(
-            endX * scale,
-            endY * scale,
-            3,
-            0,
-            Math.PI * 2
-        );
-        ctx.fill()
+        ctx.arc(end.x * scale, end.y * scale, 3, 0, Math.PI * 2);
+        ctx.fill();
     }
 
     ctx.save()
@@ -99,5 +74,4 @@ export const drawRays = (ctx: CanvasRenderingContext2D, origin: Vector2, scale: 
 
         ctx.fillText(`${degrees}°`, x * scale, y * scale)
     }
-
 }

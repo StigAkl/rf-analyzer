@@ -1,4 +1,4 @@
-import type { Room } from "../engine/types"
+import type { Room, Wall } from "../engine/types"
 
 
 export const drawRoom = (
@@ -29,4 +29,33 @@ export const drawRoom = (
     );
 
     ctx.restore();
+}
+
+export const drawWalls = (
+    ctx: CanvasRenderingContext2D,
+    walls: Wall[],
+    scale: number
+) => {
+    ctx.save()
+
+    ctx.strokeStyle = "#dddddd"
+    ctx.lineWidth = 5;
+
+    for(const wall of walls) {
+        ctx.beginPath()
+
+        ctx.moveTo(
+            wall.start.x * scale,
+            wall.start.y * scale
+        )
+
+        ctx.lineTo(
+            wall.end.x * scale,
+            wall.end.y * scale
+        )
+
+        ctx.stroke()
+    }
+
+    ctx.restore()
 }
